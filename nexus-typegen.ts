@@ -33,6 +33,7 @@ export interface NexusGenObjects {
     user: NexusGenRootTypes['User']; // User!
   }
   Flashcard: { // root type
+    authorId: number; // Int!
     backpage: string; // String!
     frontpage: string; // String!
     id: number; // Int!
@@ -43,7 +44,7 @@ export interface NexusGenObjects {
   User: { // root type
     email: string; // String!
     id: number; // Int!
-    name: string; // String!
+    names: string; // String!
     password: string; // String!
   }
 }
@@ -64,7 +65,8 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User']; // User!
   }
   Flashcard: { // field return type
-    authorId: NexusGenRootTypes['User'] | null; // User
+    author: NexusGenRootTypes['User'] | null; // User
+    authorId: number; // Int!
     backpage: string; // String!
     frontpage: string; // String!
     id: number; // Int!
@@ -79,12 +81,13 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     cards: NexusGenRootTypes['Flashcard'][]; // [Flashcard!]!
+    singleCard: NexusGenRootTypes['Flashcard']; // Flashcard!
   }
   User: { // field return type
     cards: NexusGenRootTypes['Flashcard'][]; // [Flashcard!]!
     email: string; // String!
     id: number; // Int!
-    name: string; // String!
+    names: string; // String!
     password: string; // String!
   }
 }
@@ -95,7 +98,8 @@ export interface NexusGenFieldTypeNames {
     user: 'User'
   }
   Flashcard: { // field return type name
-    authorId: 'User'
+    author: 'User'
+    authorId: 'Int'
     backpage: 'String'
     frontpage: 'String'
     id: 'Int'
@@ -110,12 +114,13 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     cards: 'Flashcard'
+    singleCard: 'Flashcard'
   }
   User: { // field return type name
     cards: 'Flashcard'
     email: 'String'
     id: 'Int'
-    name: 'String'
+    names: 'String'
     password: 'String'
   }
 }
@@ -143,6 +148,14 @@ export interface NexusGenArgTypes {
       frontpage?: string | null; // String
       id: number; // Int!
       read?: boolean | null; // Boolean
+    }
+  }
+  Query: {
+    cards: { // args
+      direction?: string | null; // String
+    }
+    singleCard: { // args
+      id: number; // Int!
     }
   }
 }

@@ -14,10 +14,11 @@ export const Flashcard = objectType({
     t.nonNull.string('backpage');
     t.nonNull.string('frontpage');
     t.nonNull.boolean('read');
-    t.field('authorId', {
+    t.nonNull.int('authorId');
+    t.field('author', {
       type: 'User',
       resolve(parent, args, context) {
-        return context.prisma.card
+        return context.prisma.flashcard
           .findUnique({ where: { id: parent.id } })
           .author();
       },
@@ -30,8 +31,32 @@ export const FlashcardQuery = extendType({
   definition(t) {
     t.nonNull.list.nonNull.field('cards', {
       type: 'Flashcard',
+      args: {
+        direction: stringArg(),
+      },
       resolve(parent, args, context, info) {
-        return context.prisma.flashcard.findMany();
+        const { direction } = args;
+        const { userId } = context;
+        return context.prisma.flashcard.findMany({
+          where: {
+            authorId: userId,
+          },
+          orderBy: {
+            id: direction ?? 'asc',
+          },
+        });
+      },
+    });
+    t.nonNull.field('singleCard', {
+      type: 'Flashcard',
+      args: {
+        id: nonNull(intArg()),
+      },
+      resolve(parent, args, context) {
+        const { id } = args;
+        return context.prisma.flashcard.findUnique({
+          where: { id },
+        });
       },
     });
   },
@@ -51,7 +76,7 @@ export const FlashcardMutation = extendType({
         const { userId } = context;
 
         if (!userId) {
-          throw new Error('Cannot post without logging in.');
+          throw new Error('Cannot create a card without logging in.');
         }
 
         const newCard = context.prisma.flashcard.create({
